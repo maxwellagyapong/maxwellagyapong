@@ -1,7 +1,7 @@
 ## 👋🏾 Hey, I'm Maxwell Agyapong
 
 I'm a backend developer, systems thinker, and entrepreneur from Ghana 🇬🇭  
-I build things that work — from web applications and financial platforms to IoT systems, trading bots, and cloud-native APIs — with a deep focus on performance, scale, and clarity.
+I build things that work — from web applications, financial platforms, IoT systems, data pipelines to trading bots, and cloud-native APIs — with a deep focus on performance, scale, and clarity.
 
 ---
 
@@ -16,9 +16,9 @@ I build things that work — from web applications and financial platforms to Io
 
 ### 🧱 Tech I Work With
 
-- **Languages:** Python, Java, TypeScript, C++, Bash  
-- **Backend:** FastAPI, Django, Spring Boot, Node.js, Express  
-- **DevOps:** Docker, Kubernetes, CI/CD, GitHub Actions  
+- **Languages:** Python, Java, JavaScript, Bash  
+- **Frameworks:** FastAPI, Django, Spring Boot  
+- **DevOps:** Docker, Kubernetes, CI/CD, Gitlab CI, GitHub Actions  
 - **Databases:** PostgreSQL, Microsoft SQL Server, Oracle, MongoDB, Redis  
 - **Tools:** Grafana, Prometheus, Git, Linux, WebSockets, Kafka, RabbitMQ  
 
