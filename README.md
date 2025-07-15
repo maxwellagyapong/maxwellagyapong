@@ -1,4 +1,4 @@
-## 👋🏾 Hey, I'm Maxwell Agyapong!
+## 👋🏾 Hey, I'm Maxwell Agyapong
 
 I'm a backend developer, systems thinker, and entrepreneur from Ghana 🇬🇭  
 I build things that work — from web applications, financial platforms, IoT systems, data pipelines to trading bots, and cloud-native APIs — with a deep focus on performance, scale, and clarity.
@@ -27,7 +27,7 @@ I build things that work — from web applications, financial platforms, IoT sys
 ### 📈 GitHub Stats
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight)  
-![Maxwell's GitHub stats](https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&theme=tokyonight)
+![Maxwell's GitHub stats](https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&theme=tokyonight&count_private=true&cache_seconds=1800)
 
 ---
 
