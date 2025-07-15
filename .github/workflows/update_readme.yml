@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}  # ← forces PAT use even during checkout
 
       - name: Update stats section in README
         run: |
@@ -19,16 +21,10 @@ jobs:
           NEW_STATS="![GitHub Stats]($STATS_URL)"
           sed -i '/<!--START_STATS-->/, /<!--END_STATS-->/c\<!--START_STATS-->\n'"$NEW_STATS"'\n<!--END_STATS-->' README.md
 
-      - name: Commit and Push README manually using PAT
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Commit and Push README
         run: |
           git config user.name "Maxwell Agyapong"
           git config user.email "35528366+maxwellagyapong@users.noreply.github.com"
-
-          # Set remote to use token for authentication
-          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
-
           git add README.md
           git diff --cached --quiet || git commit -m "Auto-update GitHub stats"
           git push origin HEAD:main
