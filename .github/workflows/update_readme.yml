@@ -2,8 +2,8 @@ name: Update README with Stats
 
 on:
   schedule:
-    - cron: '0 */6 * * *'  # Every 6 hours
-  workflow_dispatch:       # Allow manual run
+    - cron: '0 */6 * * *'  
+  workflow_dispatch:
 
 jobs:
   update-readme:
@@ -12,15 +12,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Generate README
+      - name: Update stats section in README
         run: |
-          curl -o stats.svg "https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&count_private=true&theme=tokyonight&cache_seconds=1800" -H "Authorization: token ${{ secrets.GH_TOKEN }}"
-          # Optional: Add more badges or stats here
+          STATS_URL="https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&count_private=true&theme=tokyonight&cache_seconds=1800"
+          NEW_STATS="![GitHub Stats]($STATS_URL)"
+
+          # Replace section between markers in README.md
+          sed -i '/<!--START_STATS-->/, /<!--END_STATS-->/c\<!--START_STATS-->\n'"$NEW_STATS"'\n<!--END_STATS-->' README.md
 
       - name: Commit and Push README
         run: |
           git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git add .
-          git commit -m "Update GitHub stats in README"
+          git config user.email "actions@github.com"
+          git add README.md
+          git diff --cached --quiet || git commit -m "Auto-update GitHub contribution stats"
           git push
