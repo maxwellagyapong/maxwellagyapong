@@ -13,18 +13,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_TOKEN }}  # ← forces PAT use even during checkout
+          token: ${{ secrets.GH_TOKEN }}
 
-      - name: Update stats section in README
+      - name: Download GitHub Stats Image
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          STATS_URL="https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&count_private=true&theme=tokyonight&cache_seconds=1800"
-          NEW_STATS="![GitHub Stats]($STATS_URL)"
-          sed -i '/<!--START_STATS-->/, /<!--END_STATS-->/c\<!--START_STATS-->\n'"$NEW_STATS"'\n<!--END_STATS-->' README.md
+          curl -H "Authorization: token $GH_TOKEN" \
+            "https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&count_private=true&theme=tokyonight" \
+            -o stats.svg
+
+      - name: Update README with stats image
+        run: |
+          sed -i '/<!--START_STATS-->/, /<!--END_STATS-->/c\<!--START_STATS-->\n<img src="stats.svg" alt="GitHub Stats"/>\n<!--END_STATS-->' README.md
 
       - name: Commit and Push README
         run: |
           git config user.name "Maxwell Agyapong"
           git config user.email "35528366+maxwellagyapong@users.noreply.github.com"
-          git add README.md
+          git add README.md stats.svg
           git diff --cached --quiet || git commit -m "Auto-update GitHub stats"
           git push origin HEAD:main
