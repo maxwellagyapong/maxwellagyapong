@@ -22,11 +22,11 @@ jobs:
 
       - name: Commit and Push README
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_PAT: ${{ secrets.GH_TOKEN }}  
         run: |
           git config user.name "Maxwell Agyapong"
-          git config user.email "maxwellamoakoagyapong@gmail.com"  
-          git remote set-url origin https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}
+          git config user.email "maxwellamoakoagyapong@gmail.com"
+          git remote set-url origin https://x-access-token:$GH_PAT@github.com/${{ github.repository }}
           git add README.md
-          git diff --cached --quiet || git commit -m "Auto-update GitHub stats"
+          git diff --cached --quiet || git commit -m "📈 Auto-update GitHub stats"
           git push
