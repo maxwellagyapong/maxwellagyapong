@@ -1,4 +1,4 @@
-## 👋🏾 Hey, I'm Maxwell Agyapong
+## 👋🏾 Hey, I'm Maxwell Agyapong!
 
 I'm a backend developer, systems thinker, and entrepreneur from Ghana 🇬🇭  
 I build things that work — from web applications, financial platforms, IoT systems, data pipelines to trading bots, and cloud-native APIs — with a deep focus on performance, scale, and clarity.
