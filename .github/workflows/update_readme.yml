@@ -19,12 +19,16 @@ jobs:
           NEW_STATS="![GitHub Stats]($STATS_URL)"
           sed -i '/<!--START_STATS-->/, /<!--END_STATS-->/c\<!--START_STATS-->\n'"$NEW_STATS"'\n<!--END_STATS-->' README.md
 
-      - name: Commit and push if changed
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Auto-update GitHub stats
-          author_name: maxwellagyapong
-          author_email: 35528366+maxwellagyapong@users.noreply.github.com  
-          push_options: '--force'
+      - name: Commit and Push README manually using PAT
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          git config user.name "Maxwell Agyapong"
+          git config user.email "35528366+maxwellagyapong@users.noreply.github.com"
+
+          # Set remote to use token for authentication
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
+
+          git add README.md
+          git diff --cached --quiet || git commit -m "Auto-update GitHub stats"
+          git push origin HEAD:main
