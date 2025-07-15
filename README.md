@@ -28,6 +28,7 @@ I build things that work — from web applications, financial platforms, IoT sys
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight)  
 <!--START_STATS-->
+<img src="stats.svg" alt="GitHub Stats"/>
 <!--END_STATS-->
 
 
