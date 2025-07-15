@@ -25,7 +25,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git config user.name "Maxwell Agyapong"
-          git config user.email "you@example.com"  # Replace with your GitHub-verified email
+          git config user.email "maxwellamoakoagyapong@gmail.com"  
           git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}
           git add README.md
           git diff --cached --quiet || git commit -m "Auto-update GitHub stats"
