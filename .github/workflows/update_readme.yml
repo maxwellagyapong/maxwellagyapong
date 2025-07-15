@@ -28,5 +28,5 @@ jobs:
           git config user.email "maxwellamoakoagyapong@gmail.com"
           git remote set-url origin https://x-access-token:$GH_PAT@github.com/${{ github.repository }}
           git add README.md
-          git diff --cached --quiet || git commit -m "📈 Auto-update GitHub stats"
+          git diff --cached --quiet || git commit -m "Auto-update GitHub stats"
           git push
