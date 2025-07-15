@@ -1,0 +1,26 @@
+name: Update README with Stats
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:       # Allow manual run
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Generate README
+        run: |
+          curl -o stats.svg "https://github-readme-stats.vercel.app/api?username=maxwellagyapong&show_icons=true&count_private=true&theme=tokyonight&cache_seconds=1800" -H "Authorization: token ${{ secrets.GH_TOKEN }}"
+          # Optional: Add more badges or stats here
+
+      - name: Commit and Push README
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git add .
+          git commit -m "Update GitHub stats in README"
+          git push
