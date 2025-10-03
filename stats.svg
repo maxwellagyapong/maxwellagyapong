@@ -6,7 +6,7 @@
     <circle class="rank-circle" cx="-10" cy="8" r="40" />
     <g class="rank-text">
       <text x="-5" y="3" alignment-baseline="central" dominant-baseline="central" text-anchor="middle" data-testid="level-rank-icon">
-        C+
+        B+
       </text>
     </g>
   </g>
