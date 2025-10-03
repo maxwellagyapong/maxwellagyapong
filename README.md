@@ -1,7 +1,7 @@
 ## 👋🏾 Hey, I'm Maxwell Agyapong
 
 I'm a backend developer, systems thinker, and entrepreneur from Ghana 🇬🇭  
-I build things that work — from web applications, financial platforms, IoT systems, data pipelines, to trading bots and DApps, and cloud-native APIs — with a deep focus on performance, scale, and clarity.
+I build things that work — from web applications, financial platforms, IoT systems, data pipelines, trading bots, DApps, and cloud-native APIs — with a deep focus on performance, scale, and clarity.
 
 ---
 
@@ -10,7 +10,7 @@ I build things that work — from web applications, financial platforms, IoT sys
 💼 Backend Developer at Bosonit (Elliot Cloud team)  
 🤖 Creator of `Xyntrova Bot` — a dynamic crypto trading bot using drop-based and price-action strategy  
 ❤️ I love writing Python, building intelligent systems, and automating real-world business logic  
-📊 Passionate about algorithms, finance, trading, crypto, and Web3  
+📊 Passionate about algorithms, finance, trading, DeFi, crypto, and Web3  
 
 ---
 
