@@ -16,7 +16,7 @@ I build things that work — from web applications, financial platforms, IoT sys
 
 ### 🧱 Tech I Work With
 
-- **Languages:** Python, Java, JavaScript, Bash  
+- **Languages:** Python, Java, JavaScript, Rust, Bash  
 - **Frameworks:** FastAPI, Django, Spring Boot  
 - **DevOps:** Docker, Kubernetes, CI/CD, Gitlab CI, GitHub Actions  
 - **Databases:** PostgreSQL, Microsoft SQL Server, Oracle, MongoDB, Redis  
