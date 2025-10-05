@@ -149,7 +149,7 @@
         </g>
       </g>
     <svg x="0" y="0">
-      <g transform="translate(0, 0)">
+   <!-- <g transform="translate(0, 0)">
     <g class="stagger" style="animation-delay: 450ms" transform="translate(25, 0)">
       
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">
@@ -164,7 +164,8 @@
         data-testid="stars"
       >0</text>
     </g>
-  </g><g transform="translate(0, 25)">
+  </g> -->
+  <g transform="translate(0, 25)">
     <g class="stagger" style="animation-delay: 600ms" transform="translate(25, 0)">
       
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">
@@ -196,7 +197,7 @@
       >5</text>
     </g>
   </g>
-  <g transform="translate(0, 75)">
+  <!-- <g transform="translate(0, 75)">
     <g class="stagger" style="animation-delay: 900ms" transform="translate(25, 0)">
       
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">
@@ -211,7 +212,8 @@
         data-testid="issues"
       >0</text>
     </g>
-  </g><g transform="translate(0, 100)">
+  </g> -->
+  <!-- <g transform="translate(0, 100)">
     <g class="stagger" style="animation-delay: 1050ms" transform="translate(25, 0)">
       
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">
@@ -226,7 +228,7 @@
         data-testid="contribs"
       >0</text>
     </g>
-  </g>
+  </g> -->
     </svg>
   
         </g>
