@@ -15,6 +15,7 @@ Stack: Python · Java · Rust · Go · FastAPI · Django · Spring Boot · Kafka
 
 ---
 ### 📈 GitHub Stats
+> ⚠️ Most of my work lives in private repos — these stats reflect public activity only.
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight&hide_border=true)
 
