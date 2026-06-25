@@ -1,28 +1,7 @@
-## 👋🏾 Hey, I'm Maxwell Agyapong
-
-I'm a backend developer, systems thinker, and entrepreneur from Ghana 🇬🇭  
-I build things that work — from web applications, financial platforms, IoT systems, data pipelines, trading bots, and cloud-native Applications — with a deep focus on performance, scale, and clarity.
-
----
-
-### 🚀 About Me
-
-💼 Backend Developer at Bosonit (Elliot Cloud team)  
-🤖 Creator of `Xyntrova Bot` — a dynamic crypto trading bot using drop-based and price-action strategy  
-❤️ I love writing Python, building intelligent systems, and automating real-world business logic  
-📊 Passionate about algorithms, and AI  
-
----
-
-### 🧱 Tech I Work With
-
-- **Languages:** Python, Java, JavaScript, Rust, Bash  
-- **Frameworks:** FastAPI, Django, Spring Boot  
-- **DevOps:** Docker, Kubernetes, CI/CD, Gitlab CI, GitHub Actions  
-- **Databases:** PostgreSQL, Microsoft SQL Server, Oracle, MongoDB, Redis  
-- **Tools:** Grafana, Prometheus, Git, Linux, WebSockets, Kafka, RabbitMQ  
-
----
+👋🏾 Maxwell Agyapong — Backend & AI/ML Engineer from Ghana 🇬🇭
+Building at the intersection of AI and distributed systems. Currently working on real-time on-chain risk intelligence — LightGBM classifiers, LLM sentiment scoring, and rug-pull detection across 15+ chains.
+Previously scaled IoT backends to 2.5M+ devices and trading engines to 100K+ trx/sec.
+Stack: Python · Java · Rust · Go · FastAPI · Django · Spring Boot · Kafka · PyTorch · LangChain · Postgres · K8s
 
 ### 📈 GitHub Stats
 
