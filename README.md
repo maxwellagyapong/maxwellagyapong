@@ -4,7 +4,7 @@ Building at the intersection of AI and distributed systems. Currently working on
 Previously scaled IoT backends to 2.5M+ devices and trading engines to 100K+ trx/sec.
 ---
 ### 🧱 Stack: Python · Java · Rust · Go · FastAPI · Django · Spring Boot · Kafka · PyTorch · LangChain · Postgres · K8s
-
+---
 ### 📈 GitHub Stats
 
 ![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight)  
