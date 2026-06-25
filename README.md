@@ -7,10 +7,12 @@ Previously scaled IoT backends to 2.5M+ devices and trading engines to 100K+ trx
 ---
 ### 🚀 About Me 
 ❤️ I love writing Python, building intelligent systems, and automating real-world business logic  
-📊 Passionate about AI and ML 
+📊 Passionate about AI and ML
+
 ---
 ### 🧱 Tech I Work With
 Stack: Python · Java · Rust · Go · FastAPI · Django · Spring Boot · Kafka · PyTorch · LangChain · Postgres · K8s 
+
 ---
 ### 📈 GitHub Stats
 
