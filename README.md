@@ -16,11 +16,13 @@ Stack: Python · Java · Rust · Go · FastAPI · Django · Spring Boot · Kafka
 ---
 ### 📈 GitHub Stats
 
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight)  
+![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight&hide_border=true)
+
+[![GitHub Streak](https://streak-stats.demolab.com?user=maxwellagyapong&theme=tokyonight&hide_border=true)](https://git.io/streak-stats)
+
 <!--START_STATS-->
 <img src="stats.svg" alt="GitHub Stats"/>
 <!--END_STATS-->
-
 
 ---
 
