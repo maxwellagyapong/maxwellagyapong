@@ -11,7 +11,7 @@ Previously scaled IoT backends to 2.5M+ devices and trading engines to 100K+ trx
 
 ---
 ### 🧱 Tech I Work With
-Stack: Python · Java · Rust · Go · FastAPI · Django · Spring Boot · Kafka · PyTorch · LangChain · Postgres · K8s 
+Stack: Python · Java · JavaScript · Rust · Go · FastAPI · Django · Spring Boot · Kafka · PyTorch · LangChain · Postgres · K8s 
 
 ---
 ### 📈 GitHub Stats
