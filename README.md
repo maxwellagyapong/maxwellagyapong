@@ -16,14 +16,11 @@ Stack: Python · Java · JavaScript · Rust · Go · FastAPI · Django · Spring
 ---
 ### 📈 GitHub Stats
 
-[![GitHub Streak](https://streak-stats.demolab.com?user=maxwellagyapong&theme=tokyonight&hide_border=true)](https://git.io/streak-stats)
+<img src="streak.svg" alt="GitHub Streak"/>
 
-> ⚠️ Most of my work lives in private repos — these stats reflect public activity only.
+<img src="stats.svg" alt="GitHub Stats"/> <img src="top-langs.svg" alt="Top Languages"/>
 
-![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=maxwellagyapong&layout=compact&theme=tokyonight&hide_border=true)
-<!--START_STATS-->
-<img src="stats.svg" alt="GitHub Stats"/>
-<!--END_STATS-->
+<sub>Includes private contributions · auto-updated every 12h</sub>
 
 ---
 

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="495" height="165" viewBox="0 0 495 165" role="img">
+<style>
+  .title { font: 600 18px 'Segoe UI', Ubuntu, sans-serif; fill: #70a5fd; }
+  .label { font: 600 14px 'Segoe UI', Ubuntu, sans-serif; fill: #38bdae; }
+  .value { font: 700 14px 'Segoe UI', Ubuntu, sans-serif; fill: #38bdae; }
+  .big { font: 700 28px 'Segoe UI', Ubuntu, sans-serif; fill: #38bdae; }
+  .bigaccent { font: 700 28px 'Segoe UI', Ubuntu, sans-serif; fill: #ff9e64; }
+  .sub { font: 400 12px 'Segoe UI', Ubuntu, sans-serif; fill: #38bdae; opacity: .75; }
+  .small { font: 400 12px 'Segoe UI', Ubuntu, sans-serif; fill: #38bdae; }
+</style>
+<rect width="100%" height="100%" rx="6" fill="#1a1b27"/>
+
+<text x="82" y="70" class="big" text-anchor="middle">7,341</text><text x="82" y="105" class="label" text-anchor="middle">Total Contributions</text><text x="82" y="128" class="sub" text-anchor="middle">Jan 17, 2018 – Present</text><text x="247" y="70" class="bigaccent" text-anchor="middle">492</text><text x="247" y="105" class="label" text-anchor="middle">Current Streak</text><text x="247" y="128" class="sub" text-anchor="middle">Jul 14, 2025 – Nov 17, 2026</text><text x="412" y="70" class="big" text-anchor="middle">492</text><text x="412" y="105" class="label" text-anchor="middle">Longest Streak</text><text x="412" y="128" class="sub" text-anchor="middle">Jul 14, 2025 – Nov 17, 2026</text><line x1="165" y1="35" x2="165" y2="140" stroke="#bf91f3" opacity=".4"/><line x1="330" y1="35" x2="330" y2="140" stroke="#bf91f3" opacity=".4"/>
+</svg>

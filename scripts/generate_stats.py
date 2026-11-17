@@ -1,0 +1,258 @@
+#!/usr/bin/env python3
+"""Generate GitHub profile cards (stats, streak, top languages) that include
+private contributions, using your own token via the GitHub GraphQL API.
+
+Public services like github-readme-stats.vercel.app run on *their* token, so
+they can never see your private repos. This runs inside your own Action with
+your own token instead.
+
+Env: GH_TOKEN (classic PAT with `repo` + `read:user`), optional GH_USER.
+Writes: stats.svg, streak.svg, top-langs.svg in the current directory.
+"""
+import datetime as dt
+import html
+import json
+import os
+import sys
+import urllib.request
+
+TOKEN = os.environ.get("GH_TOKEN") or sys.exit("GH_TOKEN is not set")
+API = "https://api.github.com/graphql"
+
+# tokyonight-ish palette
+BG, TITLE, TEXT, ICON, ACCENT = "#1a1b27", "#70a5fd", "#38bdae", "#bf91f3", "#ff9e64"
+
+
+def gql(query, **variables):
+    req = urllib.request.Request(
+        API,
+        data=json.dumps({"query": query, "variables": variables}).encode(),
+        headers={"Authorization": f"bearer {TOKEN}", "User-Agent": "profile-stats"},
+    )
+    with urllib.request.urlopen(req) as r:
+        body = json.load(r)
+    if body.get("errors"):
+        sys.exit(f"GraphQL error: {body['errors']}")
+    return body["data"]
+
+
+def fetch_profile():
+    return gql(
+        """
+        query {
+          viewer {
+            login name createdAt
+            pullRequests { totalCount }
+            issues { totalCount }
+            repositoriesContributedTo(includeUserRepositories: true,
+              contributionTypes: [COMMIT, PULL_REQUEST, ISSUE, REPOSITORY]) { totalCount }
+            contributionsCollection {
+              totalCommitContributions
+              restrictedContributionsCount
+              totalPullRequestContributions
+              totalPullRequestReviewContributions
+              contributionCalendar { totalContributions }
+            }
+          }
+        }"""
+    )["viewer"]
+
+
+def fetch_repos():
+    """All repos you own or contribute to as org member/collaborator, incl. private."""
+    repos, cursor = [], None
+    while True:
+        data = gql(
+            """
+            query($cursor: String) {
+              viewer {
+                repositories(first: 100, after: $cursor, isFork: false,
+                  ownerAffiliations: [OWNER, ORGANIZATION_MEMBER, COLLABORATOR]) {
+                  pageInfo { hasNextPage endCursor }
+                  nodes {
+                    stargazerCount
+                    owner { login }
+                    languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                      edges { size node { name color } }
+                    }
+                  }
+                }
+              }
+            }""",
+            cursor=cursor,
+        )["viewer"]["repositories"]
+        repos += data["nodes"]
+        if not data["pageInfo"]["hasNextPage"]:
+            return repos
+        cursor = data["pageInfo"]["endCursor"]
+
+
+def fetch_calendar_days(created_at):
+    """Every day's contribution count since the account was created."""
+    start = dt.datetime.fromisoformat(created_at.replace("Z", "+00:00")).date()
+    today = dt.datetime.now(dt.timezone.utc).date()
+    days = {}
+    year_start = start
+    while year_start <= today:
+        year_end = min(dt.date(year_start.year, 12, 31), today)
+        weeks = gql(
+            """
+            query($from: DateTime!, $to: DateTime!) {
+              viewer { contributionsCollection(from: $from, to: $to) {
+                contributionCalendar { weeks { contributionDays { date contributionCount } } }
+              } }
+            }""",
+            **{"from": f"{year_start}T00:00:00Z", "to": f"{year_end}T23:59:59Z"},
+        )["viewer"]["contributionsCollection"]["contributionCalendar"]["weeks"]
+        for w in weeks:
+            for d in w["contributionDays"]:
+                days[dt.date.fromisoformat(d["date"])] = d["contributionCount"]
+        year_start = dt.date(year_start.year + 1, 1, 1)
+    return dict(sorted(days.items()))
+
+
+def compute_streaks(days):
+    today = max(days)
+    total = sum(days.values())
+    longest = run = 0
+    longest_range = (None, None)
+    run_start = None
+    for day, count in days.items():
+        if count > 0:
+            run_start = run_start or day
+            run += 1
+            if run > longest:
+                longest, longest_range = run, (run_start, day)
+        else:
+            run, run_start = 0, None
+    # current streak: today may still be 0 without breaking it
+    current, cursor = 0, today
+    if days.get(cursor, 0) == 0:
+        cursor -= dt.timedelta(days=1)
+    end = cursor
+    while days.get(cursor, 0) > 0:
+        current += 1
+        cursor -= dt.timedelta(days=1)
+    return {
+        "total": total,
+        "first": min(days),
+        "current": current,
+        "current_range": (cursor + dt.timedelta(days=1), end) if current else (None, None),
+        "longest": longest,
+        "longest_range": longest_range,
+    }
+
+
+def fmt(n):
+    return f"{n/1000:.1f}k" if n >= 10_000 else f"{n:,}"
+
+
+def fmt_date(d):
+    return d.strftime("%b %-d, %Y") if d else "—"
+
+
+def card(width, height, body, title=None):
+    head = (
+        f'<text x="25" y="35" class="title">{html.escape(title)}</text>' if title else ""
+    )
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img">
+<style>
+  .title {{ font: 600 18px 'Segoe UI', Ubuntu, sans-serif; fill: {TITLE}; }}
+  .label {{ font: 600 14px 'Segoe UI', Ubuntu, sans-serif; fill: {TEXT}; }}
+  .value {{ font: 700 14px 'Segoe UI', Ubuntu, sans-serif; fill: {TEXT}; }}
+  .big {{ font: 700 28px 'Segoe UI', Ubuntu, sans-serif; fill: {TEXT}; }}
+  .bigaccent {{ font: 700 28px 'Segoe UI', Ubuntu, sans-serif; fill: {ACCENT}; }}
+  .sub {{ font: 400 12px 'Segoe UI', Ubuntu, sans-serif; fill: {TEXT}; opacity: .75; }}
+  .small {{ font: 400 12px 'Segoe UI', Ubuntu, sans-serif; fill: {TEXT}; }}
+</style>
+<rect width="100%" height="100%" rx="6" fill="{BG}"/>
+{head}
+{body}
+</svg>
+"""
+
+
+def stats_svg(p, stars):
+    cc = p["contributionsCollection"]
+    name = p["name"] or p["login"]
+    rows = [
+        ("Total contributions (last year)", cc["contributionCalendar"]["totalContributions"]),
+        ("Commits + private activity (last year)", cc["totalCommitContributions"] + cc["restrictedContributionsCount"]),
+        ("Pull requests (all time)", p["pullRequests"]["totalCount"]),
+        ("PR reviews (last year)", cc["totalPullRequestReviewContributions"]),
+        ("Issues (all time)", p["issues"]["totalCount"]),
+        ("Repos contributed to", p["repositoriesContributedTo"]["totalCount"]),
+        ("Stars earned", stars),
+    ]
+    body = "".join(
+        f'<circle cx="31" cy="{66 + i*24}" r="4" fill="{ICON}"/>'
+        f'<text x="45" y="{71 + i*24}" class="label">{html.escape(k)}:</text>'
+        f'<text x="440" y="{71 + i*24}" class="value" text-anchor="end">{fmt(v)}</text>'
+        for i, (k, v) in enumerate(rows)
+    )
+    return card(467, 60 + len(rows) * 24 + 10, body, f"{name}'s GitHub Stats")
+
+
+def streak_svg(s):
+    cols = [
+        (fmt(s["total"]), "Total Contributions", f'{fmt_date(s["first"])} – Present', "big"),
+        (str(s["current"]), "Current Streak", " – ".join(map(fmt_date, s["current_range"])) if s["current"] else "—", "bigaccent"),
+        (str(s["longest"]), "Longest Streak", " – ".join(map(fmt_date, s["longest_range"])), "big"),
+    ]
+    body = ""
+    for i, (big, label, sub, cls) in enumerate(cols):
+        x = 82 + i * 165
+        body += (
+            f'<text x="{x}" y="70" class="{cls}" text-anchor="middle">{big}</text>'
+            f'<text x="{x}" y="105" class="label" text-anchor="middle">{label}</text>'
+            f'<text x="{x}" y="128" class="sub" text-anchor="middle">{html.escape(sub)}</text>'
+        )
+    body += f'<line x1="165" y1="35" x2="165" y2="140" stroke="{ICON}" opacity=".4"/>'
+    body += f'<line x1="330" y1="35" x2="330" y2="140" stroke="{ICON}" opacity=".4"/>'
+    return card(495, 165, body)
+
+
+def langs_svg(repos, top=8):
+    totals, colors = {}, {}
+    for r in repos:
+        for e in r["languages"]["edges"]:
+            n = e["node"]["name"]
+            totals[n] = totals.get(n, 0) + e["size"]
+            colors[n] = e["node"]["color"] or "#858585"
+    ranked = sorted(totals.items(), key=lambda kv: -kv[1])[:top]
+    total = sum(v for _, v in ranked) or 1
+    bar, x = "", 25.0
+    for n, v in ranked:
+        w = 330 * v / total
+        bar += f'<rect x="{x:.2f}" y="50" width="{w:.2f}" height="8" fill="{colors[n]}"/>'
+        x += w
+    bar = f'<clipPath id="c"><rect x="25" y="50" width="330" height="8" rx="4"/></clipPath><g clip-path="url(#c)">{bar}</g>'
+    items = ""
+    for i, (n, v) in enumerate(ranked):
+        cx, cy = 25 + (i % 2) * 175, 80 + (i // 2) * 24
+        items += (
+            f'<circle cx="{cx + 5}" cy="{cy - 4}" r="5" fill="{colors[n]}"/>'
+            f'<text x="{cx + 15}" y="{cy}" class="small">{html.escape(n)} {100*v/total:.1f}%</text>'
+        )
+    rows = (len(ranked) + 1) // 2
+    return card(380, 80 + rows * 24, bar + items, "Most Used Languages")
+
+
+def main():
+    profile = fetch_profile()
+    repos = fetch_repos()
+    login = profile["login"]
+    stars = sum(r["stargazerCount"] for r in repos if r["owner"]["login"] == login)
+    streak = compute_streaks(fetch_calendar_days(profile["createdAt"]))
+    for name, svg in [
+        ("stats.svg", stats_svg(profile, stars)),
+        ("streak.svg", streak_svg(streak)),
+        ("top-langs.svg", langs_svg(repos)),
+    ]:
+        with open(name, "w") as f:
+            f.write(svg)
+        print(f"wrote {name}")
+
+
+if __name__ == "__main__":
+    main()
