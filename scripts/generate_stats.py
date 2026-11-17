@@ -73,6 +73,7 @@ def fetch_profile():
         query {
           viewer {
             login name createdAt
+            followers { totalCount }
             pullRequests { totalCount }
             issues { totalCount }
             repositoriesContributedTo(includeUserRepositories: true,
@@ -239,6 +240,38 @@ def card(width, height, body, title=None):
 """
 
 
+def calculate_rank(commits, prs, issues, reviews, stars, followers):
+    """Same formula and grade bands as github-readme-stats (MIT), so the
+    grade means the same thing as on the old card. Lower percentile = better."""
+    exp_cdf = lambda x: 1 - 2 ** -x
+    log_cdf = lambda x: x / (1 + x)
+    parts = [  # (weight, score)
+        (2, exp_cdf(commits / 250)),  # commits in the last year
+        (3, exp_cdf(prs / 50)),
+        (1, exp_cdf(issues / 25)),
+        (1, exp_cdf(reviews / 2)),
+        (4, log_cdf(stars / 50)),
+        (1, log_cdf(followers / 10)),
+    ]
+    pct = 100 * (1 - sum(w * v for w, v in parts) / sum(w for w, _ in parts))
+    bands = [(1, "S"), (12.5, "A+"), (25, "A"), (37.5, "A-"), (50, "B+"),
+             (62.5, "B"), (75, "B-"), (87.5, "C+"), (100, "C")]
+    return next(level for t, level in bands if pct <= t), pct
+
+
+def rank_ring(level, pct, cx, cy, r=40):
+    circ = 2 * 3.14159 * r
+    filled = circ * (100 - pct) / 100
+    return (
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{TITLE}" stroke-width="6" opacity=".2"/>'
+        f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{TITLE}" stroke-width="6" '
+        f'stroke-linecap="round" stroke-dasharray="{filled:.1f} {circ:.1f}" '
+        f'transform="rotate(-90 {cx} {cy})"/>'
+        f'<text x="{cx}" y="{cy + 9}" class="bigaccent" text-anchor="middle">{level}</text>'
+        f'<text x="{cx}" y="{cy + r + 22}" class="sub" text-anchor="middle">Top {pct:.0f}%</text>'
+    )
+
+
 def stats_svg(p, stars, s, contributions_year):
     name = p["name"] or p["login"]
     rows = [
@@ -254,10 +287,14 @@ def stats_svg(p, stars, s, contributions_year):
     body = "".join(
         f'<circle cx="31" cy="{66 + i*24}" r="4" fill="{ICON}"/>'
         f'<text x="45" y="{71 + i*24}" class="label">{html.escape(k)}:</text>'
-        f'<text x="440" y="{71 + i*24}" class="value" text-anchor="end">{fmt(v)}</text>'
+        f'<text x="400" y="{71 + i*24}" class="value" text-anchor="end">{fmt(v)}</text>'
         for i, (k, v) in enumerate(rows)
     )
-    return card(467, 60 + len(rows) * 24 + 10, body, f"{name}'s GitHub Stats")
+    level, pct = calculate_rank(s["commits_year"], s["prs"], s["issues"], s["reviews"],
+                                stars, p["followers"]["totalCount"])
+    height = 60 + len(rows) * 24 + 10
+    body += rank_ring(level, pct, 485, height / 2 - 5)
+    return card(560, height, body, f"{name}'s GitHub Stats")
 
 
 def streak_svg(s):
