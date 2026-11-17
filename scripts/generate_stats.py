@@ -14,6 +14,7 @@ import html
 import json
 import os
 import sys
+import urllib.parse
 import urllib.request
 
 TOKEN = os.environ.get("GH_TOKEN") or sys.exit("GH_TOKEN is not set")
@@ -34,6 +35,36 @@ def gql(query, **variables):
     if body.get("errors"):
         sys.exit(f"GraphQL error: {body['errors']}")
     return body["data"]
+
+
+def search_count(kind, q):
+    """REST search totals. Unlike contributionsCollection, search counts work in
+    private org repos (e.g. CLET-GSL-DEV) instead of hiding it as 'restricted'."""
+    url = f"https://api.github.com/search/{kind}?per_page=1&q={urllib.parse.quote(q)}"
+    req = urllib.request.Request(
+        url,
+        headers={
+            "Authorization": f"bearer {TOKEN}",
+            "User-Agent": "profile-stats",
+            "Accept": "application/vnd.github+json",
+        },
+    )
+    with urllib.request.urlopen(req) as r:
+        return json.load(r)["total_count"]
+
+
+def fetch_search_stats(login):
+    profile_repo = f"{login}/{login}"  # its auto-update commits aren't real work
+    year_ago = (dt.date.today() - dt.timedelta(days=365)).isoformat()
+    return {
+        "prs": search_count("issues", f"author:{login} type:pr"),
+        "reviews": search_count("issues", f"reviewed-by:{login} type:pr -author:{login}"),
+        "issues": search_count("issues", f"author:{login} type:issue"),
+        "commits": search_count("commits", f"author:{login} -repo:{profile_repo}"),
+        "commits_year": search_count(
+            "commits", f"author:{login} -repo:{profile_repo} committer-date:>={year_ago}"
+        ),
+    }
 
 
 def fetch_profile():
@@ -87,8 +118,41 @@ def fetch_repos():
         cursor = data["pageInfo"]["endCursor"]
 
 
-def fetch_calendar_days(created_at):
-    """Every day's contribution count since the account was created."""
+def fetch_bot_commit_days(login, year_start, year_end):
+    """Per-day commit counts in the profile repo (the stats bot's auto-updates)."""
+    target, out, cursor = f"{login}/{login}", {}, None
+    while True:
+        repos = gql(
+            """
+            query($from: DateTime!, $to: DateTime!, $cursor: String) {
+              viewer { contributionsCollection(from: $from, to: $to) {
+                commitContributionsByRepository(maxRepositories: 100) {
+                  repository { nameWithOwner }
+                  contributions(first: 100, after: $cursor) {
+                    pageInfo { hasNextPage endCursor }
+                    nodes { occurredAt commitCount }
+                  }
+                }
+              } }
+            }""",
+            cursor=cursor,
+            **{"from": f"{year_start}T00:00:00Z", "to": f"{year_end}T23:59:59Z"},
+        )["viewer"]["contributionsCollection"]["commitContributionsByRepository"]
+        mine = next((r for r in repos if r["repository"]["nameWithOwner"] == target), None)
+        if not mine:
+            return out
+        for n in mine["contributions"]["nodes"]:
+            d = dt.date.fromisoformat(n["occurredAt"][:10])
+            out[d] = out.get(d, 0) + n["commitCount"]
+        page = mine["contributions"]["pageInfo"]
+        if not page["hasNextPage"]:
+            return out
+        cursor = page["endCursor"]
+
+
+def fetch_calendar_days(login, created_at):
+    """Every day's contribution count since the account was created, minus the
+    profile repo's auto-update commits so they don't inflate totals/streaks."""
     start = dt.datetime.fromisoformat(created_at.replace("Z", "+00:00")).date()
     today = dt.datetime.now(dt.timezone.utc).date()
     days = {}
@@ -107,6 +171,9 @@ def fetch_calendar_days(created_at):
         for w in weeks:
             for d in w["contributionDays"]:
                 days[dt.date.fromisoformat(d["date"])] = d["contributionCount"]
+        for d, n in fetch_bot_commit_days(login, year_start, year_end).items():
+            if d in days:
+                days[d] = max(0, days[d] - n)
         year_start = dt.date(year_start.year + 1, 1, 1)
     return dict(sorted(days.items()))
 
@@ -172,15 +239,15 @@ def card(width, height, body, title=None):
 """
 
 
-def stats_svg(p, stars):
-    cc = p["contributionsCollection"]
+def stats_svg(p, stars, s, contributions_year):
     name = p["name"] or p["login"]
     rows = [
-        ("Total contributions (last year)", cc["contributionCalendar"]["totalContributions"]),
-        ("Commits + private activity (last year)", cc["totalCommitContributions"] + cc["restrictedContributionsCount"]),
-        ("Pull requests (all time)", p["pullRequests"]["totalCount"]),
-        ("PR reviews (last year)", cc["totalPullRequestReviewContributions"]),
-        ("Issues (all time)", p["issues"]["totalCount"]),
+        ("Total contributions (last year)", contributions_year),
+        ("Commits (last year)", s["commits_year"]),
+        ("Commits (all time)", s["commits"]),
+        ("Pull requests (all time)", s["prs"]),
+        ("PRs reviewed (all time)", s["reviews"]),
+        ("Issues (all time)", s["issues"]),
         ("Repos contributed to", p["repositoriesContributedTo"]["totalCount"]),
         ("Stars earned", stars),
     ]
@@ -243,9 +310,13 @@ def main():
     repos = fetch_repos()
     login = profile["login"]
     stars = sum(r["stargazerCount"] for r in repos if r["owner"]["login"] == login)
-    streak = compute_streaks(fetch_calendar_days(profile["createdAt"]))
+    days = fetch_calendar_days(login, profile["createdAt"])
+    streak = compute_streaks(days)
+    year_ago = max(days) - dt.timedelta(days=365)
+    contributions_year = sum(n for d, n in days.items() if d > year_ago)
+    search = fetch_search_stats(login)
     for name, svg in [
-        ("stats.svg", stats_svg(profile, stars)),
+        ("stats.svg", stats_svg(profile, stars, search, contributions_year)),
         ("streak.svg", streak_svg(streak)),
         ("top-langs.svg", langs_svg(repos)),
     ]:
